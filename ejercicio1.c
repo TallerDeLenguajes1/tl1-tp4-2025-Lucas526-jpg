@@ -18,14 +18,16 @@ void interfazCarga(Nodo **tareasPend,int *id);
 Nodo *crearTarea(int *id);
 void insertarTarea(Nodo **tareasPend,Nodo *tarea);
 void interfazTareasRealizadas(Nodo **tareasPend,Nodo **tareasFinalizadas);
-void mostrarTareas(Nodo *tareasPend);
+void mostrarTareas(Nodo *tareasPend,Nodo *tareasReali);
 
 int main(){
     int id=1000;
     Nodo *tareasPendientes=crearListaVacia();
     Nodo *tareasCompletadas=crearListaVacia();
     interfazCarga(&tareasPendientes,&id);
+    mostrarTareas(tareasPendientes,tareasCompletadas);
     interfazTareasRealizadas(&tareasPendientes,&tareasCompletadas);
+    mostrarTareas(tareasPendientes,tareasCompletadas);
     return 0;
 }
 
@@ -71,7 +73,7 @@ void interfazTareasRealizadas(Nodo **tareasPend,Nodo **tareasFinalizadas){
         puts("Ingrese el id de la tarea completada");
         scanf("%d",&id);
         getchar();
-    while (aux && aux->T.TareaID==id)
+    while (aux && aux->T.TareaID!=id)
     {
         ant=aux;
         aux=aux->Siguiente;
@@ -79,14 +81,14 @@ void interfazTareasRealizadas(Nodo **tareasPend,Nodo **tareasFinalizadas){
     if (aux)
     {
         if (aux==(*tareasPend)){
-            aux->Siguiente=*tareasFinalizadas;
-            *tareasFinalizadas=aux;
             *tareasPend = aux->Siguiente;
-        }else{
             aux->Siguiente=*tareasFinalizadas;
             *tareasFinalizadas=aux;
-            *tareasFinalizadas=ant->Siguiente;
+        }else{
             ant->Siguiente=aux->Siguiente;
+            aux->Siguiente=*tareasFinalizadas;
+            *tareasFinalizadas=aux;
+            
         }
         puts("Tarea movida con exito !");
     }else{
@@ -97,8 +99,19 @@ void interfazTareasRealizadas(Nodo **tareasPend,Nodo **tareasFinalizadas){
     getchar();
     } while (bandera);
 }
-void mostrarTareas(Nodo *tareasPend){
+void mostrarTareas(Nodo *tareasPend,Nodo *tareasReali){
     Nodo *aux=tareasPend;
+    puts("Tareas pendientes");
+    while (aux)
+    {
+        printf("La descripcion es:%s\n",aux->T.Descripcion);
+        printf("La duracion es:%d\n",aux->T.Duracion);
+        printf("El ID de la tarea es:%d\n",aux->T.TareaID);
+        aux=aux->Siguiente;
+        printf("\n");
+    }
+    puts("Tareas realizadas");
+    aux=tareasReali;
     while (aux)
     {
         printf("La descripcion es:%s\n",aux->T.Descripcion);

@@ -14,23 +14,25 @@ struct Nodo *Siguiente;
 }Nodo;
 
 Nodo *crearListaVacia();
-void interfaz(Nodo **tareasPend,int *id);
+void interfazCarga(Nodo **tareasPend,int *id);
 Nodo *crearTarea(int *id);
 void insertarTarea(Nodo **tareasPend,Nodo *tarea);
+void interfazTareasRealizadas(Nodo **tareasPend,Nodo **tareasFinalizadas);
 void mostrarTareas(Nodo *tareasPend);
 
 int main(){
     int id=1000;
     Nodo *tareasPendientes=crearListaVacia();
     Nodo *tareasCompletadas=crearListaVacia();
-    interfaz(&tareasPendientes,&id);
+    interfazCarga(&tareasPendientes,&id);
+    interfazTareasRealizadas(&tareasPendientes,&tareasCompletadas);
     return 0;
 }
 
 Nodo *crearListaVacia(){
     return NULL;
 }
-void interfaz(Nodo **tareasPend,int *id){
+void interfazCarga(Nodo **tareasPend,int *id){
     int bandera;
     do
     {   
@@ -43,7 +45,6 @@ void interfaz(Nodo **tareasPend,int *id){
 }
 Nodo *crearTarea(int *id){
     char aux[100];
-    puts("Ingrese una tarea pendiente");
     Nodo *tarea=(Nodo *)malloc(sizeof(Nodo));
     tarea->Siguiente=NULL;
     puts("Ingrese la descripcion de la tarea");
@@ -53,12 +54,48 @@ Nodo *crearTarea(int *id){
     strcpy(tarea->T.Descripcion,aux);
     puts("Ingrese la duracion");
     scanf("%d",&tarea->T.Duracion);
+    getchar();
     tarea->T.TareaID=(*id)++;
     return tarea;
 }
 void insertarTarea(Nodo **tareasPend,Nodo *tarea){
     tarea->Siguiente=*tareasPend;
     *tareasPend=tarea;
+}
+void interfazTareasRealizadas(Nodo **tareasPend,Nodo **tareasFinalizadas){
+    Nodo *aux=*tareasPend;
+    Nodo *ant=NULL;
+    int id,bandera;
+    do
+    {
+        puts("Ingrese el id de la tarea completada");
+        scanf("%d",&id);
+        getchar();
+    while (aux && aux->T.TareaID==id)
+    {
+        ant=aux;
+        aux=aux->Siguiente;
+    }
+    if (aux)
+    {
+        if (aux==(*tareasPend)){
+            aux->Siguiente=*tareasFinalizadas;
+            *tareasFinalizadas=aux;
+            *tareasPend = aux->Siguiente;
+        }else{
+            aux->Siguiente=*tareasFinalizadas;
+            *tareasFinalizadas=aux;
+            *tareasFinalizadas=ant->Siguiente;
+            ant->Siguiente=aux->Siguiente;
+        }
+        puts("Tarea movida con exito !");
+    }else{
+        puts("Tarea no encontrada");
+    }
+    puts("Quiere aginar otra tarea como completada?");
+    scanf("%d",&bandera);
+    getchar();
+    } while (bandera);
 }
 void mostrarTareas(Nodo *tareasPend){
     Nodo *aux=tareasPend;
